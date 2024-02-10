@@ -57,7 +57,7 @@ app.post('/strains/upload', (req, res) => {
         }
 
         const newStrains = req.body; 
-        connection.query('INSERT INTO strains(strain, weight, about, effects) VALUES ?', [newStrains, (insertError, insertResult)  => { 
+        connection.query('INSERT INTO strains(strain, weight, about, effects) VALUES ?', [newStrains.map(strain => [strain.strain, strain.weight, strain.about, strain.effects])], (insertError, insertResult)  => { 
             if(insertError){ 
                 console.error('error inserting new strains', insertError.message); 
                 res.status(500).send('Error inserting new strains')
@@ -65,7 +65,7 @@ app.post('/strains/upload', (req, res) => {
             }
 
             res.status(201).send('changes to strains save successfully')
-        }])
+        })
     })
 })
 app.listen(port, () => { 
