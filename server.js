@@ -35,7 +35,6 @@ app.get('/strains', (req, res) => {
             console.error('error querying', queryError.message)
             return; 
         }
-
         res.json(results)
     })
 })
@@ -45,6 +44,28 @@ app.get('/pages', (req, res) => {
             console.error('error querying', queryError.message)
         }
         res.json(results)
+    })
+})
+
+//post 
+app.post('/strains/upload', (req, res) => { 
+    connection.query('DELETE FROM strains', (deleteError, deleteResult) => { 
+        if(deleteError){ 
+            console.error('Error deleting strains for replacement', deleteError)
+            res.status(500).send('Error deleting strains for replacement')
+            return;
+        }
+
+        const newStrains = req.body; 
+        connection.query('INSERT INTO strains(strain, weight, about, effects) VALUES ?', [newStrains, (insertError, insertResult)  => { 
+            if(insertError){ 
+                console.error('error inserting new strains', insertError.message); 
+                res.status(500).send('Error inserting new strains')
+                return;
+            }
+
+            res.status(201).send('changes to strains save successfully')
+        }])
     })
 })
 app.listen(port, () => { 
